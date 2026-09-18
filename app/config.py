@@ -5,10 +5,15 @@ class Settings:
     PROJECT_NAME: str = "AccessLens - Secure Enterprise Research Agent"
     COMPANY_NAME: str = "NovaTech Solutions"
     VERSION: str = "1.0.0"
-    API_V1_STR: ""
+    API_V1_STR: str = ""
 
     # On Vercel, serverless filesystem is read-only except /tmp
-    _is_serverless = bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
+    _is_serverless = bool(
+        os.getenv("VERCEL")
+        or os.getenv("VERCEL_ENV")
+        or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
+        or os.getenv("NOW_REGION")
+    )
     _default_db = "sqlite:////tmp/accesslens.db" if _is_serverless else "sqlite:///./accesslens.db"
     
     DATABASE_URL: str = os.getenv("DATABASE_URL", _default_db)

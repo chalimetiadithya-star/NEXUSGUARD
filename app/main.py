@@ -12,23 +12,29 @@ from app.api import auth_router, research_router, document_router, admin_router
 from app.seed import seed_database
 from app.models.user import User
 
-# Initialize database schema
-Base.metadata.create_all(bind=engine)
+# Initialize database schema safely
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception:
+    pass
 
 def ensure_database_seeded():
-    db = SessionLocal()
     try:
-        # Check if users table has records
-        if db.query(User).count() == 0:
-            seed_database(db)
-    except Exception:
+        db = SessionLocal()
         try:
-            Base.metadata.create_all(bind=engine)
-            seed_database(db)
+            # Check if users table has records
+            if db.query(User).count() == 0:
+                seed_database(db)
         except Exception:
-            pass
-    finally:
-        db.close()
+            try:
+                Base.metadata.create_all(bind=engine)
+                seed_database(db)
+            except Exception:
+                pass
+        finally:
+            db.close()
+    except Exception:
+        pass
 
 # Auto-seed on load (for Vercel serverless functions)
 ensure_database_seeded()
