@@ -36,14 +36,16 @@ htmlcov/
 
 # Node / Frontend
 node_modules/
-frontend/node_modules/
-frontend/.vite/
 .npm/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# Legacy subdirectories
+frontend/
+backend/
 
 # IDE / OS
 .vscode/

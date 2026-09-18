@@ -1,17 +1,11 @@
 import sys
-import os
 from pathlib import Path
 
-# Add backend directory to Python path
-backend_path = Path(__file__).resolve().parent.parent / "backend"
-if str(backend_path) not in sys.path:
-    sys.path.insert(0, str(backend_path))
-
-root_path = Path(__file__).resolve().parent.parent
-if str(root_path) not in sys.path:
-    sys.path.insert(0, str(root_path))
+root_dir = Path(__file__).resolve().parent.parent
+if str(root_dir) not in sys.path:
+    sys.path.insert(0, str(root_dir))
 
 from app.main import app, ensure_database_seeded
 
-# Ensure SQLite is populated on Vercel cold starts
+# Ensure database is created and seeded in /tmp for Vercel
 ensure_database_seeded()

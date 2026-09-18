@@ -82,11 +82,8 @@ def health_check():
 # -------------------------------------------------------------
 def get_dist_dir():
     possible_paths = [
-        Path(__file__).resolve().parent.parent.parent / "frontend" / "dist",
-        Path(__file__).resolve().parent.parent / "frontend" / "dist",
-        Path.cwd() / "frontend" / "dist",
+        Path(__file__).resolve().parent.parent / "dist",
         Path.cwd() / "dist",
-        Path("/var/task/frontend/dist"),
         Path("/var/task/dist"),
     ]
     for p in possible_paths:
@@ -103,7 +100,7 @@ async def serve_index():
     current_dist = get_dist_dir()
     if current_dist and (current_dist / "index.html").is_file():
         return FileResponse(current_dist / "index.html")
-    return HTMLResponse("<h1>AccessLens Backend Active</h1><p>Please ensure frontend/dist is built.</p>")
+    return HTMLResponse("<h1>AccessLens Backend Active</h1><p>Frontend assets are ready.</p>")
 
 @app.get("/favicon.svg")
 async def serve_favicon():
