@@ -1,8 +1,10 @@
 import os
 import sys
 from pathlib import Path
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-# Add project root and current dir to sys.path
+# Ensure root directory is on sys.path
 root_dir = Path(__file__).resolve().parent.parent
 if str(root_dir) not in sys.path:
     sys.path.insert(0, str(root_dir))
@@ -11,30 +13,51 @@ api_dir = Path(__file__).resolve().parent
 if str(api_dir) not in sys.path:
     sys.path.insert(0, str(api_dir))
 
-# Ensure VERCEL environment variable is active for serverless path handling
-if "VERCEL" not in os.environ and ("AWS_LAMBDA_FUNCTION_NAME" in os.environ or "NOW_REGION" in os.environ):
-    os.environ["VERCEL"] = "1"
+# Explicit top-level FastAPI instance for Vercel Python runtime AST detection
+app = FastAPI(
+    title="AccessLens - Secure Enterprise Research Agent",
+    description="Enterprise research assistant with deterministic pre-LLM authorization gate.",
+    version="1.0.0"
+)
 
+# CORS middleware for Vercel
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+from app.config import settings
+from app.api import auth_router, research_router, document_router, admin_router
+from app.main import ensure_database_seeded
+
+# Auto-seed database in /tmp for serverless environment
 try:
-    from app.main import app, ensure_database_seeded
     ensure_database_seeded()
-except Exception as exc:
-    import traceback
-    from fastapi import FastAPI
-    from fastapi.responses import JSONResponse
+except Exception:
+    pass
 
-    app = FastAPI(title="AccessLens Startup Diagnostic")
-    _err = traceback.format_exc()
+# Include routers without prefix
+app.include_router(auth_router)
+app.include_router(research_router)
+app.include_router(document_router)
+app.include_router(admin_router)
 
-    @app.get("/{full_path:path}")
-    def startup_fallback(full_path: str):
-        return JSONResponse(
-            status_code=500,
-            content={
-                "error": "Initialization error on Vercel Serverless Function",
-                "exception": str(exc),
-                "traceback": _err,
-                "sys_path": sys.path
-            }
-        )
+# Include routers with /api prefix
+app.include_router(auth_router, prefix="/api")
+app.include_router(research_router, prefix="/api")
+app.include_router(document_router, prefix="/api")
+app.include_router(admin_router, prefix="/api")
 
+@app.get("/health")
+@app.get("/api/health")
+def health_check():
+    return {
+        "status": "healthy",
+        "company": settings.COMPANY_NAME,
+        "platform": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "llm_provider": settings.LLM_PROVIDER
+    }
