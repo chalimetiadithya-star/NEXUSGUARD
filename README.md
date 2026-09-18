@@ -163,26 +163,29 @@ The test suite validates defense against 6 adversarial attacks:
 - Python 3.10+
 - Node.js 18+ and npm
 
-### 1. Backend Setup
+### 1. Unified Setup (Root Directory)
 ```bash
-cd backend
+# Install Python backend dependencies & seed database
 python -m pip install -r requirements.txt
 python -m app.seed
-uvicorn app.main:app --reload --port 8000
-```
-*Backend runs on http://127.0.0.1:8000 (API Docs available at http://127.0.0.1:8000/docs)*
 
-### 2. Frontend Setup
-```bash
-cd frontend
+# Install Node.js frontend dependencies
 npm install
+```
+
+### 2. Running Locally
+```bash
+# Terminal 1: Start FastAPI Backend (Port 8000)
+uvicorn app.main:app --reload --port 8000
+
+# Terminal 2: Start React Frontend (Port 5173)
 npm run dev
 ```
 *Frontend runs on http://localhost:5173*
+*Backend runs on http://127.0.0.1:8000 (API Docs available at http://127.0.0.1:8000/docs)*
 
 ### 3. Run Automated Tests
 ```bash
-cd backend
 python -m pytest -v
 ```
 *(All 23 automated tests covering Scenarios A-C, adversarial attacks, and RBAC will execute and pass)*
@@ -192,7 +195,7 @@ This repository is configured for **unified single-project deployment** on Verce
 1. Import `https://github.com/chalimetiadithya-star/NEXUSGUARD.git` into Vercel.
 2. Leave the **Root Directory** setting as default (`./` / root).
 3. Vercel automatically detects:
-   - Root `vercel.json` and `package.json` to build the Vite + React frontend to `frontend/dist`.
+   - Root `package.json` and `vite.config.ts` to build the Vite + React frontend to `dist`.
    - Root `api/index.py` and `requirements.txt` to run the FastAPI backend as Serverless Functions.
    - All API routes under `/api/*` are routed to the Python engine, while UI routes are routed to the SPA.
 4. Click **Deploy** — the full prototype will build and run on a single unified URL!
