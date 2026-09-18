@@ -187,6 +187,16 @@ python -m pytest -v
 ```
 *(All 23 automated tests covering Scenarios A-C, adversarial attacks, and RBAC will execute and pass)*
 
+### 4. Deploying to Vercel as a Single Project
+This repository is configured for **unified single-project deployment** on Vercel:
+1. Import `https://github.com/chalimetiadithya-star/NEXUSGUARD.git` into Vercel.
+2. Leave the **Root Directory** setting as default (`./` / root).
+3. Vercel automatically detects:
+   - Root `vercel.json` and `package.json` to build the Vite + React frontend to `frontend/dist`.
+   - Root `api/index.py` and `requirements.txt` to run the FastAPI backend as Serverless Functions.
+   - All API routes under `/api/*` are routed to the Python engine, while UI routes are routed to the SPA.
+4. Click **Deploy** — the full prototype will build and run on a single unified URL!
+
 ---
 
 ## 10. Environment Variables (`.env`)
