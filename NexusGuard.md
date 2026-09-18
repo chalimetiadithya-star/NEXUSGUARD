@@ -27,9 +27,9 @@ Pick one, combine two, write your own, or leave it blank:
 - S.KALYAN RAM
 - P.DEEKSHITH
 
-**Repo Link (Optional):** https://github.com/varshukarthik/AccessLens
+**Repo Link (Optional):** https://github.com/chalimetiadithya-star/NEXUSGUARD.git
 
-**Demo Link (Optional):** N/A: add the deployed demo link once available.
+**Demo Link (Optional):** https://nexusguard-21ncwq0nl-chalimetiadithya-2113s-projects.vercel.app
 
 ---
 
@@ -119,7 +119,7 @@ Employees can ask natural-language questions across company knowledge while acce
 
 <!-- Of everything you proposed, which part have you built, and which part of the problem does that piece solve right now? A small piece that truly works is a great answer. -->
 
-Build status was not supplied. The planned MVP is authenticated demo users, seeded classified documents, retrieval, deterministic authorization, version handling, secure context construction, cited LLM answers, and audit/security views. Replace this with verified build status before submission.
+Fully working prototype: JWT authentication, seeded demo users and classified documents, deterministic PolicyEngine, BM25 retrieval, version/conflict resolution, secure context builder, citation validation, interactive Security Inspector, and compliance audit logging.
 
 **Before vs. After**
 
@@ -253,13 +253,16 @@ Max 120 characters per bullet.
 -->
 
 **Working:**
-
-- Project architecture, security policy, test scenarios, and MVP acceptance criteria are fully defined.
-
+ 
+- End-to-end secure research pipeline with pre-LLM authorization gate and deterministic clearance hierarchy.
+- Interactive Security Inspector visual graph displaying allow/deny decisions and proof of isolation.
+- Version and conflict resolution strictly on authorized evidence; citation validator ensuring integrity.
+- Full automated test suite (23/23 tests passing) covering Scenarios A-C, adversarial attacks, and RBAC.
+- Single-deployment production build serving both frontend UI and backend API functions seamlessly.
+ 
 **Partly working, mocked, or hard-coded:**
-
-- Prototype implementation status was not provided; replace this line with verified working features before submission.
-- Demo users and classified internal documents are intended to be seeded/mock data for the hackathon.
+ 
+- Demo accounts (Finance, Marketing, Executive, Admin) and internal documents are pre-seeded in SQLite for the hackathon.
 
 **Not working or not built yet:**
 
