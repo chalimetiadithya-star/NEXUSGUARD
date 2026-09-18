@@ -61,3 +61,13 @@ def health_check():
         "version": settings.VERSION,
         "llm_provider": settings.LLM_PROVIDER
     }
+
+@app.get("/")
+@app.get("/api")
+def root_api():
+    return {
+        "status": "online",
+        "service": "AccessLens Secure Enterprise Research Agent API",
+        "version": settings.VERSION,
+        "company": settings.COMPANY_NAME
+    }

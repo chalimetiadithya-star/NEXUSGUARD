@@ -48,7 +48,7 @@ def get_admin_stats(
             "question": e.question,
             "status": e.status,
             "duration_ms": e.duration_ms,
-            "created_at": e.created_at.isoformat()
+            "created_at": e.created_at.isoformat() if e.created_at else ""
         }
         for e in recent_events
     ]

@@ -51,8 +51,8 @@ def get_conversations(
             id=c.id,
             user_id=c.user_id,
             title=c.title,
-            created_at=c.created_at.isoformat(),
-            updated_at=c.updated_at.isoformat(),
+            created_at=c.created_at.isoformat() if c.created_at else "",
+            updated_at=c.updated_at.isoformat() if c.updated_at else "",
             message_count=len(c.messages)
         )
         for c in conversations
@@ -75,8 +75,8 @@ def create_conversation(
         id=conv.id,
         user_id=conv.user_id,
         title=conv.title,
-        created_at=conv.created_at.isoformat(),
-        updated_at=conv.updated_at.isoformat(),
+        created_at=conv.created_at.isoformat() if conv.created_at else "",
+        updated_at=conv.updated_at.isoformat() if conv.updated_at else "",
         message_count=0
     )
 
@@ -113,7 +113,7 @@ def get_conversation_messages(
                 request_id=msg.request_id,
                 citations=citations,
                 status=msg.status,
-                created_at=msg.created_at.isoformat()
+                created_at=msg.created_at.isoformat() if msg.created_at else ""
             )
         )
 
