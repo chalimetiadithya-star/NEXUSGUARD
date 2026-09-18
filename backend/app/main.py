@@ -1,6 +1,11 @@
+import os
+from pathlib import Path
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, HTMLResponse
+
 from app.config import settings
 from app.database import engine, Base, SessionLocal
 from app.api import auth_router, research_router, document_router, admin_router
@@ -71,6 +76,59 @@ def health_check():
         "version": settings.VERSION,
         "llm_provider": settings.LLM_PROVIDER
     }
+
+# -------------------------------------------------------------
+# Static Frontend Serving (Enables seamless single-deployment on Vercel)
+# -------------------------------------------------------------
+def get_dist_dir():
+    possible_paths = [
+        Path(__file__).resolve().parent.parent.parent / "frontend" / "dist",
+        Path(__file__).resolve().parent.parent / "frontend" / "dist",
+        Path.cwd() / "frontend" / "dist",
+        Path.cwd() / "dist",
+        Path("/var/task/frontend/dist"),
+        Path("/var/task/dist"),
+    ]
+    for p in possible_paths:
+        if (p / "index.html").is_file():
+            return p
+    return None
+
+dist_dir = get_dist_dir()
+if dist_dir and (dist_dir / "assets").is_dir():
+    app.mount("/assets", StaticFiles(directory=str(dist_dir / "assets")), name="assets")
+
+@app.get("/")
+async def serve_index():
+    current_dist = get_dist_dir()
+    if current_dist and (current_dist / "index.html").is_file():
+        return FileResponse(current_dist / "index.html")
+    return HTMLResponse("<h1>AccessLens Backend Active</h1><p>Please ensure frontend/dist is built.</p>")
+
+@app.get("/favicon.svg")
+async def serve_favicon():
+    current_dist = get_dist_dir()
+    if current_dist and (current_dist / "favicon.svg").is_file():
+        return FileResponse(current_dist / "favicon.svg")
+    return HTMLResponse("")
+
+@app.get("/{full_path:path}")
+async def catch_all_spa(full_path: str):
+    # If it is an API route that was not found, return 404
+    for prefix in ["api", "auth", "research", "documents", "admin", "conversations", "docs", "openapi.json"]:
+        if full_path == prefix or full_path.startswith(f"{prefix}/"):
+            raise HTTPException(status_code=404, detail="Not Found")
+
+    current_dist = get_dist_dir()
+    if current_dist:
+        file_target = current_dist / full_path
+        if file_target.is_file():
+            return FileResponse(file_target)
+        index_target = current_dist / "index.html"
+        if index_target.is_file():
+            return FileResponse(index_target)
+
+    return HTMLResponse("<h1>AccessLens Prototype</h1>")
 
 if __name__ == "__main__":
     import uvicorn
